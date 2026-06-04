@@ -712,6 +712,100 @@ if (nrow(weak_nodes) > 0)
 
 ```
 
+## 13. Classical Distance Bootstrap Reference to Test QBS Depression
+```{r eval = F}
+##  Classical Distance Bootstrap Reference
+
+# Read in all 100 pre-optimized cophenetic matrices and reconstruct
+# NJ topologies directly, providing a classical distance-matrix comparator
+# that isolates the quantum annealing step as the sole variable between pipelines.
+
+matrix_files <- list.files("bootstrap_inputs", pattern = "matrix_.*\\.csv", full.names = TRUE)
+matrix_files <- sort(matrix_files)
+
+classical_dist_boot_list <- lapply(1:length(matrix_files), function(i)
+{
+  mat <- as.dist(read.csv(matrix_files[[i]], row.names = 1))
+  tr  <- ape::nj(mat)
+  return(tr)
+})
+class(classical_dist_boot_list) <- "multiPhylo"
+
+# Map bipartition frequencies onto the ML backbone to get CDBS values
+cdbs_tree <- phangorn::plotBS(raw_ref, classical_dist_boot_list, type = "none", p = 0)
+cdbs_tree <- ape::root(cdbs_tree, "Freycinetia_baueriana", resolve.root = TRUE)
+cdbs_tree <- ape::drop.tip(cdbs_tree, "Freycinetia_baueriana")
+cdbs_tree <- ape::ladderize(cdbs_tree)
+
+# Calculate RF distances against the unrooted reference with all 19 taxa intact
+rf_distances_cdbs <- sapply(1:length(classical_dist_boot_list), function(i)
+{
+  return(TreeDist::RobinsonFoulds(raw_ref_unrooted, classical_dist_boot_list[[i]]))
+})
+
+message("\n=== CLASSICAL DISTANCE BOOTSTRAP RESOLUTION AUDIT ===")
+print(summary(sapply(classical_dist_boot_list, function(tr)
+{
+  ape::unroot(tr)$Nnode / max_possible_splits * 100
+})))
+
+message("\n=== CLASSICAL DISTANCE BOOTSTRAP RF DISTANCES ===")
+print(summary(rf_distances_cdbs))
+
+message("\n=== CLASSICAL DISTANCE BOOTSTRAP SUPPORT (CDBS) ===")
+cdbs_raw <- as.numeric(cdbs_tree$node.label) * 100
+print(summary(cdbs_raw[!is.na(cdbs_raw)]))
+
+# Node-by-node QBS vs CDBS comparison
+# qbs_values are raw proportions (0-1) from Section 8; multiply by 100 here
+qbs_numeric  <- as.numeric(qbs_values) * 100
+cdbs_numeric <- cdbs_raw
+
+# Trim to shared node count to guard against root node discrepancies
+min_nodes    <- min(length(qbs_numeric), length(cdbs_numeric))
+qbs_numeric  <- qbs_numeric[1:min_nodes]
+cdbs_numeric <- cdbs_numeric[1:min_nodes]
+
+delta_support <- qbs_numeric - cdbs_numeric
+
+message("\n=== QBS vs CDBS NODE-BY-NODE DELTA ===")
+print(summary(delta_support[!is.na(delta_support)]))
+message("Median delta: ", paste0(round(median(delta_support, na.rm = TRUE), 2),
+        " ± ", round(IQR(delta_support, na.rm = TRUE), 2)))
+
+# Render side-by-side comparison plot
+pdf("QBS_vs_CDBS_Comparison.pdf", width = 14, height = 15)
+par(mfrow = c(1, 2), mar = c(5, 8, 4, 2))
+
+ape::plot.phylo(supported_tree, cex = 1.0, font = 3, edge.width = 2,
+                label.offset = 0.0001, main = "Quantum Bootstrap Support (QBS)")
+ape::nodelabels(text = paste0(as.character(round(qbs_numeric, 1)),
+                ifelse(is.na(qbs_numeric), "", "%")),
+                adj = c(1, -0.5), frame = "none", cex = 0.8, font = 2, col = "darkblue")
+
+ape::plot.phylo(cdbs_tree, cex = 1.0, font = 3, edge.width = 2,
+                label.offset = 0.0001, main = "Classical Distance Bootstrap Support (CDBS)")
+ape::nodelabels(text = paste0(as.character(round(cdbs_numeric, 1)),
+                ifelse(is.na(cdbs_numeric), "", "%")),
+                adj = c(1, -0.5), frame = "none", cex = 0.8, font = 2, col = "darkred")
+dev.off()
+
+# Scatterplot of QBS vs CDBS per node
+pdf("QBS_vs_CDBS_Scatterplot.pdf", width = 7, height = 7)
+valid_idx <- !is.na(qbs_numeric) & !is.na(cdbs_numeric)
+plot(cdbs_numeric[valid_idx], qbs_numeric[valid_idx],
+     xlab = "Classical Distance Bootstrap Support (CDBS %)",
+     ylab = "Quantum Bootstrap Support (QBS %)",
+     main = "QBS vs. CDBS Node Support",
+     pch = 19, col = "steelblue", xlim = c(0, 100), ylim = c(0, 100))
+abline(0, 1, col = "darkred", lty = 2, lwd = 2)
+legend("topleft", legend = "1:1 line", col = "darkred", lty = 2,
+       lwd = 2, box.col = "white")
+dev.off()
+```
+---
+
+
 ---
 
 ## License
