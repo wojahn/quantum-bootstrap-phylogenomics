@@ -2141,11 +2141,103 @@ if (nrow(weak_nodes) &gt; 0)
 } else {
   message(&quot;All nodes possess high support; no topological weak zones detected.&quot;)
 }</code></pre>
+</div>
+<div id="classical-distance-bootstrap-reference-to-test-qbs-depression" class="section level2">
+<h2>13. Classical Distance Bootstrap Reference to Test QBS
+Depression</h2>
+<pre class="r"><code>##  Classical Distance Bootstrap Reference
+
+# Read in all 100 pre-optimized cophenetic matrices and reconstruct
+# NJ topologies directly, providing a classical distance-matrix comparator
+# that isolates the quantum annealing step as the sole variable between pipelines.
+
+matrix_files &lt;- list.files(&quot;bootstrap_inputs&quot;, pattern = &quot;matrix_.*\\.csv&quot;, full.names = TRUE)
+matrix_files &lt;- sort(matrix_files)
+
+classical_dist_boot_list &lt;- lapply(1:length(matrix_files), function(i)
+{
+  mat &lt;- as.dist(read.csv(matrix_files[[i]], row.names = 1))
+  tr  &lt;- ape::nj(mat)
+  return(tr)
+})
+class(classical_dist_boot_list) &lt;- &quot;multiPhylo&quot;
+
+# Map bipartition frequencies onto the ML backbone to get CDBS values
+cdbs_tree &lt;- phangorn::plotBS(raw_ref, classical_dist_boot_list, type = &quot;none&quot;, p = 0)
+cdbs_tree &lt;- ape::root(cdbs_tree, &quot;Freycinetia_baueriana&quot;, resolve.root = TRUE)
+cdbs_tree &lt;- ape::drop.tip(cdbs_tree, &quot;Freycinetia_baueriana&quot;)
+cdbs_tree &lt;- ape::ladderize(cdbs_tree)
+
+# Calculate RF distances against the unrooted reference with all 19 taxa intact
+rf_distances_cdbs &lt;- sapply(1:length(classical_dist_boot_list), function(i)
+{
+  return(TreeDist::RobinsonFoulds(raw_ref_unrooted, classical_dist_boot_list[[i]]))
+})
+
+message(&quot;\n=== CLASSICAL DISTANCE BOOTSTRAP RESOLUTION AUDIT ===&quot;)
+print(summary(sapply(classical_dist_boot_list, function(tr)
+{
+  ape::unroot(tr)$Nnode / max_possible_splits * 100
+})))
+
+message(&quot;\n=== CLASSICAL DISTANCE BOOTSTRAP RF DISTANCES ===&quot;)
+print(summary(rf_distances_cdbs))
+
+message(&quot;\n=== CLASSICAL DISTANCE BOOTSTRAP SUPPORT (CDBS) ===&quot;)
+cdbs_raw &lt;- as.numeric(cdbs_tree$node.label) * 100
+print(summary(cdbs_raw[!is.na(cdbs_raw)]))
+
+# Node-by-node QBS vs CDBS comparison
+# qbs_values are raw proportions (0-1) from Section 8; multiply by 100 here
+qbs_numeric  &lt;- as.numeric(qbs_values) * 100
+cdbs_numeric &lt;- cdbs_raw
+
+# Trim to shared node count to guard against root node discrepancies
+min_nodes    &lt;- min(length(qbs_numeric), length(cdbs_numeric))
+qbs_numeric  &lt;- qbs_numeric[1:min_nodes]
+cdbs_numeric &lt;- cdbs_numeric[1:min_nodes]
+
+delta_support &lt;- qbs_numeric - cdbs_numeric
+
+message(&quot;\n=== QBS vs CDBS NODE-BY-NODE DELTA ===&quot;)
+print(summary(delta_support[!is.na(delta_support)]))
+message(&quot;Median delta: &quot;, paste0(round(median(delta_support, na.rm = TRUE), 2),
+        &quot; ± &quot;, round(IQR(delta_support, na.rm = TRUE), 2)))
+
+# Render side-by-side comparison plot
+pdf(&quot;QBS_vs_CDBS_Comparison.pdf&quot;, width = 14, height = 15)
+par(mfrow = c(1, 2), mar = c(5, 8, 4, 2))
+
+ape::plot.phylo(supported_tree, cex = 1.0, font = 3, edge.width = 2,
+                label.offset = 0.0001, main = &quot;Quantum Bootstrap Support (QBS)&quot;)
+ape::nodelabels(text = paste0(as.character(round(qbs_numeric, 1)),
+                ifelse(is.na(qbs_numeric), &quot;&quot;, &quot;%&quot;)),
+                adj = c(1, -0.5), frame = &quot;none&quot;, cex = 0.8, font = 2, col = &quot;darkblue&quot;)
+
+ape::plot.phylo(cdbs_tree, cex = 1.0, font = 3, edge.width = 2,
+                label.offset = 0.0001, main = &quot;Classical Distance Bootstrap Support (CDBS)&quot;)
+ape::nodelabels(text = paste0(as.character(round(cdbs_numeric, 1)),
+                ifelse(is.na(cdbs_numeric), &quot;&quot;, &quot;%&quot;)),
+                adj = c(1, -0.5), frame = &quot;none&quot;, cex = 0.8, font = 2, col = &quot;darkred&quot;)
+dev.off()
+
+# Scatterplot of QBS vs CDBS per node
+pdf(&quot;QBS_vs_CDBS_Scatterplot.pdf&quot;, width = 7, height = 7)
+valid_idx &lt;- !is.na(qbs_numeric) &amp; !is.na(cdbs_numeric)
+plot(cdbs_numeric[valid_idx], qbs_numeric[valid_idx],
+     xlab = &quot;Classical Distance Bootstrap Support (CDBS %)&quot;,
+     ylab = &quot;Quantum Bootstrap Support (QBS %)&quot;,
+     main = &quot;QBS vs. CDBS Node Support&quot;,
+     pch = 19, col = &quot;steelblue&quot;, xlim = c(0, 100), ylim = c(0, 100))
+abline(0, 1, col = &quot;darkred&quot;, lty = 2, lwd = 2)
+legend(&quot;topleft&quot;, legend = &quot;1:1 line&quot;, col = &quot;darkred&quot;, lty = 2,
+       lwd = 2, box.col = &quot;white&quot;)
+dev.off()</code></pre>
 <hr />
 </div>
 <div id="license" class="section level2">
 <h2>License</h2>
-<p><a href="https://www.gnu.org/licenses/agpl-3.0.html"><img src="https://www.gnu.org/graphics/agplv3-with-text-162x68.png" alt="AGPL v3 License" /></a></p>
+<p><a href="https://www.gnu.org/licenses/agpl-3.0.html"><img src="data:text/html; charset=iso-8859-1;charset=utf-8,%3C%21DOCTYPE%20HTML%20PUBLIC%20%22%2D%2F%2FIETF%2F%2FDTD%20HTML%202%2E0%2F%2FEN%22%3E%0A%3Chtml%3E%3Chead%3E%0A%3Ctitle%3E403%20Forbidden%3C%2Ftitle%3E%0A%3C%2Fhead%3E%3Cbody%3E%0A%3Ch1%3EForbidden%3C%2Fh1%3E%0A%3Cp%3EYou%20don%27t%20have%20permission%20to%20access%20this%20resource%2E%3C%2Fp%3E%0A%3C%2Fbody%3E%3C%2Fhtml%3E%0A" alt="AGPL v3 License" /></a></p>
 <hr />
 </div>
 <div id="institutions" class="section level2">
