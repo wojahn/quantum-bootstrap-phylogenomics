@@ -1,6 +1,6 @@
 ---
-title: "Quantum Bootstrap Phylogenomics Pipeline"
-author: "J. M. A. Wojahn, P. E. Ellestad, and S. Buerki"
+title: ""
+author: ""
 output:
   html_document:
     toc: true
@@ -728,4 +728,4 @@ John M. A. Wojahn (a), Paige Ellestad (b), Sven Buerki (a)
 
 (b) Department of Biological Sciences, University of Memphis, 3700 Walker Ave, Memphis, Tennessee 38152, USA
 
-Proudly made in the USA and Canada by members of the 2SLGBTQIA+ Community
+🏳️‍🌈 Proudly Made by members of the 2SLGBTQIA+ Community in the USA 🇺🇸 and Canada 🇨🇦
