@@ -1,4 +1,4 @@
-# Assessing Bootstrap Uncertainty and Topological Fidelity in Quantum and Quantum-Inspired Phylogenomics: A Proof-of-Concept Framework
+# A"Integrating Frequentist Bootstrapping with Quantum-Inspired Phylogenetic Reconstruction: A Proof-of-Concept
 Non-parametric phylogenetic bootstrapping and topological ensemble cloud generation leveraging discrete quantum optimization architectures and QUBO mapping frameworks.
 
 Citation for preprint coming soon.
