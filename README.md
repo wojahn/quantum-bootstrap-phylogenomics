@@ -1,4 +1,4 @@
-# A"Integrating Frequentist Bootstrapping with Quantum-Inspired Phylogenetic Reconstruction: A Proof-of-Concept
+# Integrating Frequentist Bootstrapping with Quantum-Inspired Phylogenetic Reconstruction: A Proof-of-Concept
 Non-parametric phylogenetic bootstrapping and topological ensemble cloud generation leveraging discrete quantum optimization architectures and QUBO mapping frameworks.
 
 John M. A. Wojahn, Paige Ellestad
