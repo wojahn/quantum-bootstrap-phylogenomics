@@ -3,7 +3,6 @@ Non-parametric phylogenetic bootstrapping and topological ensemble cloud generat
 
 Citation for preprint coming soon.
 
-Click this to be taken to the instructions and vignette:
 [![Pipeline & Vignette](https://img.shields.io/badge/Click_Here_to_Access-Pipeline_&_Vignette-success?style=for-the-badge&logo=readme&logoColor=white)](https://wojahn.github.io/quantum-bootstrap-phylogenomics/)
 
 
