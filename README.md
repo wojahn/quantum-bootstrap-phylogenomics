@@ -118,7 +118,7 @@ Figure 2: (a) IQ_TREE maximum likelihood phylogenetic tree, (b) hybrid classical
 <img width="468" height="606" alt="image" src="https://github.com/user-attachments/assets/b2efbdae-7d93-4015-880d-a365aa073a6d" />
 
 
-References
+# References
 Boothby, K., Bunyk, P., Raymond, J., & Roy, A. (2020). Next-generation topology for quantum annealing. IEEE Transactions on Quantum Engineering, 1, 1-14. Art no. 3101114. 
 Buerki, S., Callmander, M.W., Devey, D.S., Chappell, L., Gallaher, T., Munzinger, J., Haevermans, T., Forest, F. (2012). Straightening out the screw¬pines: A first step in understanding phylogenetic relationships within Pandanaceae. TAXON 61, 1010-1020. https://doi.org/10.1002/tax.615008
 Chen, Y., Ma, P. and Zhong, W. (2026). Quantum statistical bootstrap. arXiv preprint arXiv:2604.00951.
