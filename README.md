@@ -5,7 +5,7 @@ John M. A. Wojahn, Paige Ellestad
 
 [![Pipeline](https://img.shields.io/badge/Click_Here_to_Access-Pipeline_&_Vignette-success?style=for-the-badge&logo=readme&logoColor=white)](https://wojahn.github.io/quantum-bootstrap-phylogenomics/)
 
-How to cite: Wojahn, J.M.A., Ellestad, P.E. (2026) Integrating Frequentist Bootstrapping with Quantum-Inspired Phylogenetic Reconstruction: A Proof-of-Concept. github.com/wojahn/quantum-bootstrap-phylogenomics DOI: 10.5281/zenodo.20534276
+# How to cite: Wojahn, J.M.A., Ellestad, P.E. (2026) Integrating Frequentist Bootstrapping with Quantum-Inspired Phylogenetic Reconstruction: A Proof-of-Concept. github.com/wojahn/quantum-bootstrap-phylogenomics DOI: 10.5281/zenodo.20534276
 
 
 # Description, Vignette, and Description of Vignet Results:
