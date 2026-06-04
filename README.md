@@ -116,3 +116,42 @@ Figure 1: Flowchart of the our methodology to produce the phylogenetic trees.
 Figure 2: (a) IQ_TREE maximum likelihood phylogenetic tree, (b) hybrid classical-quantum phylogenetic tree, (c) NJ tree produced using classical boostrap tree distance matrices, (d) DensiTree comparing topologies of quantum-inspired bootstrap trees, (e) histogram of Robinson-Foulds distances among the quantum-inspired bootstrap trees
 
 <img width="468" height="606" alt="image" src="https://github.com/user-attachments/assets/b2efbdae-7d93-4015-880d-a365aa073a6d" />
+
+
+References
+Boothby, K., Bunyk, P., Raymond, J., & Roy, A. (2020). Next-generation topology for quantum annealing. IEEE Transactions on Quantum Engineering, 1, 1-14. Art no. 3101114. 
+Buerki, S., Callmander, M.W., Devey, D.S., Chappell, L., Gallaher, T., Munzinger, J., Haevermans, T., Forest, F. (2012). Straightening out the screw¬pines: A first step in understanding phylogenetic relationships within Pandanaceae. TAXON 61, 1010-1020. https://doi.org/10.1002/tax.615008
+Chen, Y., Ma, P. and Zhong, W. (2026). Quantum statistical bootstrap. arXiv preprint arXiv:2604.00951.
+D-Wave Systems Inc. (2021). D-Wave Ocean Software Documentation (Version 6.0) [Computer software].
+de Ronde, C. (2015). Quantum superpositions do exist! But “quantum physical reality actuality” (Reply to Dieks and Griffiths). PhilSci-Archive. https://philsci-archive.pitt.edu/11330/
+Deutsch, D. (1985). Quantum theory, the Church-Turing principle and the universal quantum computer. Proc. R. Soc. Lond. A 400, 97-117.
+DiCiccio, T. J. and Efron, B. (1996). Bootstrap confidence intervals. Stat. Sci. 11, 189-228.
+Dirac, P. A. M. (1958). The Principles of Quantum Mechanics (4th ed.). Oxford University Press.
+Efron, B. (1979). Bootstrap methods: another look at the jackknife. Ann. Statist. 7, 1-26.
+Einstein, A., Podolsky, B. and Rosen, N. (1935). Can quantum-mechanical description of physical reality be considered complete? Phys. Rev. 47, 777-780.
+Felsenstein, J. (1978). Cases in which parsimony or compatibility methods will be positively misleading. Syst. Zool. 27, 401-410.
+Felsenstein, J. (1981). Evolutionary trees from DNA sequences: a maximum likelihood approach. J. Mol. Evol. 17, 368-376.
+Felsenstein, J. (1985). Confidence limits on phylogenies: an approach using the bootstrap. Evolution 39, 783-791.
+Fernández-Otero, N., Pena, T. F. and Pichel, J. C. (2026). Reconstruction of phylogenetic trees via graph-splitting using quantum computing. J. Supercomput. 82, 324. 
+Ferro, N. (2024). PhyloTree_ReConst: Reconstruction of Phylogenetic Trees using Quantum Computing (Version 1.0) [Source code]. GitHub. https://github.com/Nicofero/PhyloTree_ReConst 
+Gallaher, T., Callmander, M.W., Buerki, S., Keeley, S.C. (2015). A long distance dispersal hypothesis for the Pandanaceae and the origins of the Pandanus tectorius complex. Molecular Phylogenetics and Evolution 83, 20-32. https://doi.org/10.1016/j.ympev.2014.11.002
+Kadowaki, T. and Nishimori, H. (1998). Quantum annealing in the transverse Ising model. Phys. Rev. E 58, 5355-5363. 
+Kalyaanamoorthy, S., Minh, B. Q., Wong, T. K. F., von Haeseler, A., & Jermiin, L. S. (2017). ModelFinder: fast model selection for accurate phylogenetic estimates. Nature Methods, 14(6), 587–589. https://doi.org/10.1038/nmeth.4285
+Lucas, A. (2014). Ising formulations of many NP problems. Front. Physics 2, 5. 
+Minh, B. Q., Schmidt, H. A., Chernomor, O., Schrempf, D., Woodhams, M. D., von Haeseler, A., & Lanfear, R. (2020). IQ-TREE 2: New models and efficient methods for phylogenomic introns and phylogenetics. Molecular Biology and Evolution, 37(5), 1530–1534. https://doi.org/10.1093/molbev/msaa015
+Nguyen, L. T., Schmidt, H. A., von Haeseler, A., & Minh, B. Q. (2015). IQ-TREE: a fast and effective stochastic algorithm for estimating maximum-likelihood phylogenies. Molecular Biology and Evolution, 32(1), 268–274. https://doi.org/10.1093/molbev/msu300
+Nielsen, M. A. and Chuang, I. L. (2010). Quantum Computation and Quantum Information. Cambridge: Cambridge University Press.
+Onodera, W., Hara, N., Aoki, S., Asahi, T., & Nishikawa, K. (2023). Phylogenetic tree reconstruction via graph cut presented using a quantum-inspired computer. Molecular Phylogenetics and Evolution, 178, 107636. https://doi.org/10.1016/j.ympev.2022.107636
+Paradis, E., Claude, J., & Strimmer, K. (2004). APE: Analyses of Phylogenetics and Evolution in R language. Bioinformatics, 20(2), 289–290. https://doi.org/10.1093/bioinformatics/btg412
+Paradis, E., & Schliep, K. (2019). ape 5.0: an environment for modern phylogenetics and evolutionary analyses in R. Bioinformatics, 35(3), 526–528. https://doi.org/10.1093/bioinformatics/bty633
+Robinson, D. F., & Foulds, L. R. (1981). Comparison of phylogenetic trees. Mathematical Biosciences, 53(1-2), 131–147. https://doi.org/10.1016/0025-5564(81)90043-2
+Rzhetsky, A. and Nei, M. (1992). A simple method for estimating and testing minimum-evolution trees. Mol. Biol. Evol. 9, 945-967.
+Saitou, N. and Nei, M. (1987). The neighbour-joining method: a new method for reconstructing phylogenetic trees. Mol. Biol. Evol. 4, 406-425.
+Schliep, K. P. (2011). phangorn: phylogenetic analysis in R. Bioinformatics, 27(4), 592–593. https://doi.org/10.1093/bioinformatics/btq706
+Shannon, C. E. (1938). A symbolic analysis of relay and switching circuits. Trans. Am. Inst. Electr. Eng. 57, 713-723.
+Shi, J., & Malik, J. (2000). Normalized cuts and image segmentation. IEEE Transactions on Pattern Analysis and Machine Intelligence, 22(8), 888–905. https://doi.org/10.1109/34.868688
+Smith, M. R. (2020). Information theoretic generalized Robinson–Foulds metrics for comparing phylogenetic trees. Bioinformatics, 36(20), 5007–5013. https://doi.org/10.1093/bioinformatics/btaa614
+Wojahn, J.M.A., Callmander, M.W., and Buerki, S. (2025). Pandanus plastomes decoded: When climate mirrors morphology and phylogenetic relationships. American Journal of Botany 112(2): e16461. https://doi.org/10.1002/ajb2.16461
+Wojahn JMA, Felix Forest, Olivier Maurin, Paige Skinner, Marge Poma, Callmander MW, and Buerki S. (2026). Adaptive introgression as a driver of tropical plant evolution: Pandanus as a case study. Molecular Phylogenetics and Evolution.
+Wright, E. S. (2016). Using DECIPHER to design correct oligonucleotides and alignments. The R Journal, 8(1), 352–359. https://doi.org/10.32614/RJ-2016-025
+
