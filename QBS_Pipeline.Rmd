@@ -1,32 +1,75 @@
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#          Quantum Bootstrap Phylogenomics Pipeline
-#               By John M. A. Wojahn, PhD, FLS
-#                        3rd June 2026
-#            Licensed under the GNU Affero v. 3
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---
+title: "Quantum Bootstrap Phylogenomics Pipeline"
+author: "J. M. A. Wojahn, P. E. Ellestad, and S. Buerki"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: flatly
+  pdf_document:
+    toc: true
+    toc_depth: 3
+---
 
-library(ape)
-library(phangorn)
-library(DECIPHER)
-library(Biostrings)
-library(treeio)
-library(TreeDist)
-library(PrideBar)
-library(reticulate)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-remotes::install("wojahn/PrideBar")
+<div style="background-color:#06402B; color:white; padding:2em; text-align:center; border-radius:10px;">
+  <h1>Quantum Bootstrap Phylogenomics Pipeline</h1>
+  <h3>by J. M. A. Wojahn, P. E. Ellestad, and S. Buerki</h3>
+  <p>Reproducible phylogenomic inference with quantum-inspired bootstrap analysis</p>
+</div>
 
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# PRE-REQUISITE DEPENDENCY INSTALLATION SCRIPT
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+##
+![](https://img.shields.io/badge/Open%20Source-Yes-brightgreen)
+
+---
+
+## Summary
+
+This pipeline integrates a top-down quantum graph-splitting architecture into a frequentist
+resampling loop to produce statistical branch support values for quantum-inspired phylogenetic
+trees. Classical nonparametric resampling serves as the outer loop, while the quantum-inspired
+annealing engine handles tree reconstruction within each individual replicate — a design that
+makes the pipeline immediately executable on software-based simulators without physical quantum
+hardware.
+
+As a proof-of-concept, the pipeline is applied to an empirical plastome dataset of 19
+Pandanaceae taxa within a simulated quantum annealing environment. Validation proceeds through
+three complementary approaches: (1) mapping quantum-inspired replicate topologies onto a fixed
+classical ML reference tree to calculate Quantum Bootstrap Support (QBS) values; (2) compiling
+the 100 quantum-derived topologies into a DensiTree cloudscape to visualize topological variance
+density; and (3) calculating absolute Robinson-Foulds (RF) distances across the distribution to
+test whether the annealing backend converges on a biologically plausible, constrained
+neighborhood of treespace.
+
+---
+
+## Pipeline Overview
+
+**Figure 1.** Flowchart of the full pipeline from taxon selection through support mapping.
+
+<img width="700" height="1000" alt="Pipeline Flowchart" src="Flowww.png">
+
+---
+
+## 1. Software Installation
+
+### 1.1 R Packages
+
+Install all required CRAN, Bioconductor, and GitHub-hosted packages. Missing packages are
+detected and installed automatically.
+
+```{r eval = F}
 
 # 1. Install CRAN-hosted core phylogenetics and infrastructure tools
 cran_packages <- c("ape", "phangorn", "treeio", "TreeDist", "reticulate", "remotes")
 new_cran <- cran_packages[!(cran_packages %in% installed.packages()[,"Package"])]
 
-if(length(new_cran) > 0) {
+if(length(new_cran) > 0) 
+{
   message("Installing missing CRAN packages: ", paste(new_cran, collapse = ", "))
   install.packages(new_cran, repos = "https://cloud.r-project.org")
 }
@@ -35,27 +78,77 @@ if(length(new_cran) > 0) {
 bioc_packages <- c("DECIPHER", "Biostrings")
 new_bioc <- bioc_packages[!(bioc_packages %in% installed.packages()[,"Package"])]
 
-if(length(new_bioc) > 0) {
+if(length(new_bioc) > 0)
+{
   message("Installing missing Bioconductor packages: ", paste(new_bioc, collapse = ", "))
-  if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  if (!requireNamespace("BiocManager", quietly = TRUE)) 
+  {
     install.packages("BiocManager", repos = "https://cloud.r-project.org")
   }
   BiocManager::install(new_bioc, update = FALSE, ask = FALSE)
 }
 
 # 3. Install GitHub-hosted custom tools
-if (!requireNamespace("PrideBar", quietly = TRUE)) {
+if (!requireNamespace("PrideBar", quietly = TRUE)) 
+{
   message("Installing Custom Development Package: PrideBar from GitHub")
   remotes::install_github("wojahn/PrideBar", upgrade = "never")
 }
 
+```
 
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# PHASE 1: TAXON SELECTION AND CORE ALIGNMENT PIPELINE
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### 1.2 External Software
+
+Install IQ-TREE 2 for classical ML inference, the PhyloTree_ReConst quantum partitioning
+library from Fernández-Otero et al. (2026), and the D-Wave Ocean SDK for simulated or physical
+quantum annealing. If a D-Wave Leap API key is available, enter it during `dwave setup`.
+
+```{bash eval=F}
+
+# Install classical phylogenomic software
+brew install iqtree2
+
+# Install package from Fernández-Otero et al. (2026) 
+clone https://github.com/Nicofero/PhyloTree_ReConst.git
+cd PhyloTree_ReConst
+cp qaoa_functions.py qa_phylo_tree.ipynb qa_hybrid_trees.py qa_functions.py qa_big_trees.py ..
+cd ..
+
+# Install D-Wave simulator/quantum computer access
+pip install numpy pandas networkx pyqubo dwave-ocean-sdk
+dwave setup --auth
+# Enter API key if you have one
+
+# Install SeaView
+conda install -c bioconda seaview
+
+```
+
+---
+
+## 2. Reproducibility
+
+Set a global random seed before any stochastic operations to ensure fully reproducible results
+across all bootstrap resampling and annealing steps.
+
+```{r eval = F}
 
 set.seed(35753)
 
+```
+
+---
+
+## 3. Taxon Selection and Sequence Alignment
+
+Extract the 19-taxon cohort (16 *Pandanus* ingroup, 2 *Benstonea* outgroups, 1 *Freycinetia*
+root) from the master plastome file of Wojahn et al. (2023). The IRB inverted repeat is removed
+upstream in the source file. Sequences are re-aligned using a guide-tree profile-to-profile
+approach in DECIPHER, with gap smoothing applied after initial alignment construction.
+
+```{r eval = F}
+
+# This is the clean plastome file from Wojahn et al. (2023), Molecular Phylogenetics and Evolution
 plastomes <- ape::read.FASTA("AlignedOrderedGoodPlastomes_First.fasta")
 
 # Extract the strategic 19-taxon cohort (16 Ingroup, 2 Benstonea, 1 Freycinetia)
@@ -78,10 +171,20 @@ plastomez <- DECIPHER::RemoveGaps(plastomez)
 plastomez_a <- DECIPHER::AlignSeqs(plastomez, processors = 10)
 plastomez_a <- DECIPHER::AdjustAlignment(plastomez_a)
 Biostrings::writeXStringSet(plastomez_a, "Pandanus_a.fasta")
+# This is how I made the file in the GitHub Repo
 
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# PHASE 2: CLASSICAL REFERENCE COMPUTATION (IQ-TREE)
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+```
+
+---
+
+## 4. Classical Maximum Likelihood Reference Tree
+
+Infer the ML reference topology in IQ-TREE 2 using ModelFinder Plus for automatic substitution
+model selection and 1,000 UFBoot replicates. The resulting tree is rooted on *Freycinetia
+baueriana*, ladderized, and saved as the fixed comparative backbone for all downstream QBS
+mapping.
+
+```{r eval = F}
 
 iqtree_cmd <- "iqtree -s Pandanus_a.fasta -m MFP -bb 1000 -nt AUTO -redo -o Freycinetia_baueriana -seed 35753 -safe"
 system(iqtree_cmd)
@@ -97,14 +200,29 @@ plot(classical_ref, show.node.label = FALSE, cex = 1.0, root.edge = TRUE)
 nodelabels(classical_ref$node.label, adj = c(1.2, -1.5), frame = "none", cex = 0.8, font = 2, col = "darkblue")
 dev.off()
 
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# PHASE 3: OPTIMIZED FREQUENTIST RESAMPLING LOOP (100 BOOTSTRAP GENERATION)
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+```
 
+---
+
+## 5. Classical Frequentist Bootstrap Resampling
+
+Generate 100 non-parametric bootstrap replicates via Felsenstein's (1985) protocol. For each
+replicate, a starting topology is estimated from a Jukes-Cantor distance matrix using
+Neighbor-Joining, then fully optimized under GTR+Γ with Nearest-Neighbor Interchange
+rearrangements. Optimizing each replicate prior to matrix export removes bootstrap sampling
+noise before QUBO conversion. Each finalized tree is converted to a cophenetic distance matrix
+and written to disk.
+
+```{r eval = F}
+
+# Read in alignment again in correct format
 final_alignment <- read.phyDat("Pandanus_a.fasta", format = "fasta")
+
+# Perform Felsensteinian bootstrapping
 boot_alignments <- bootstrap.phyDat(final_alignment, FUN = identity, bs = 100)
 dir.create("bootstrap_inputs", showWarnings = FALSE)
 
+# Make distance matrices
 PrideBar::SetPrideBar(1, 100, 2)
 for (i in 1:100)
 {
@@ -132,9 +250,24 @@ for (i in 1:100)
 }
 PrideBar::FadePrideBar()
 
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# PHASE 4: WRITE AND RUN QUANTUM BACKEND DISCRETE OPTIMIZATION
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+```
+
+---
+
+## 6. Quantum and Quantum-Inspired Bootstrap Tree Reconstruction
+
+Each cophenetic distance matrix is converted into an edge-weighted similarity graph and
+partitioned recursively via the Normalized Minimum Cut criterion, mapped into QUBO form using
+the PhyloTree_ReConst API. Two execution backends are provided: a physical D-Wave QPU (Section
+6.1) and a local classical simulated annealing simulator (Section 6.2). Both write 100 resolved
+Newick topologies to a master output file.
+
+### 6.1 Physical Quantum Annealing (D-Wave QPU)
+
+Use this version if a D-Wave Leap API key is configured and access to a Pegasus-topology QPU
+is available.
+
+```{r eval = F}
 
 # REAL Quantum version
 dwave_python_script_content <- c(
@@ -200,6 +333,16 @@ dwave_python_script_content <- c(
 )
 
 writeLines(dwave_python_script_content, con = "run_quantum_bootstrap.py")
+
+```
+
+### 6.2 Simulated Quantum Annealing (Classical Simulator)
+
+Use this version for execution on standard hardware without QPU access. The neal
+SimulatedAnnealingSampler mirrors the minimization logic of a physical Pegasus topology,
+running 1,000 thermodynamic Monte Carlo trajectories per graph-cut calculation.
+
+```{r eval = F}
 
 # SIMULATED Quantum version
 
@@ -278,20 +421,38 @@ writeLines(dwave_python_script_content, "run_quantum_bootstrap.py")
 use_condaenv("base", required = TRUE)
 py_run_file("run_quantum_bootstrap.py")
 
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# PHASE 5: CONFIGURATION & INGESTION
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+```
+
+---
+
+## 7. Bootstrap Tree Ingestion and Resolution Audit
+
+Read the 100 quantum bootstrap topologies from disk, sanitize tip labels for consistency with
+the ML reference backbone, and drop any rogue taxa introduced by string artifacts from the
+Python parser. Tree resolution is computed across all replicates as the ratio of resolved
+internal nodes to the maximum possible unrooted splits for a 19-taxon tree.
+
+```{r eval = F}
+
+# Read in calssical tree
 target_tree_file  <- "Pandanus_a.fasta.treefile"
+
+# Read in quantum bootstrap trees
 quantum_boot_file <- "quantum_bootstrap_trees.tre"
 
 raw_ref <- ape::read.tree(target_tree_file)
+
+# Ensure no weird string artifacts from python
 raw_ref$tip.label <- chartr("-", "_", raw_ref$tip.label)
 raw_ref$tip.label <- trimws(raw_ref$tip.label)
 ref_labels <- sort(raw_ref$tip.label)
 
 raw_ref_unrooted <- ape::unroot(raw_ref)
+
+# Calculate maximum possible number of splits
 max_possible_splits <- length(raw_ref_unrooted$tip.label) - 3
 
+# Read in bootstrap trees
 boot_lines <- readLines(quantum_boot_file)
 boot_lines <- boot_lines[boot_lines != ""]
 
@@ -323,9 +484,20 @@ resolution_percentages <- sapply(1:length(clean_boot_list), function(i)
 message("\n=== QUANTUM BOOTSTRAP RESOLUTION AUDIT ===")
 print(summary(resolution_percentages))
 
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# PHASE 6: CALCULATE QUANTUM BOOTSTRAP SUPPORT (QBS)
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+```
+
+---
+
+## 8. Quantum Bootstrap Support Mapping
+
+Map bipartition frequencies from the 100 annealing topologies onto the fixed ML reference
+backbone using phangorn::plotBS to calculate QBS values at each internal node. *Freycinetia
+baueriana* is dropped after support mapping to isolate the 18-taxon ingroup for visualization.
+The hybrid QBS tree is exported as a PDF.
+
+```{r eval = F}
+
+# Plot classical topology with bootstrap support
 supported_tree <- phangorn::plotBS(raw_ref, clean_boot_list, type = "none", p = 0)
 
 # Drop outgroup to focus on ingroup support matrix visualization
@@ -342,10 +514,18 @@ ape::nodelabels(text = paste0(as.character(as.numeric(qbs_values)*100), ifelse(q
                 adj = c(1, -0.5), frame = "none", cex = 0.8, font = 2, col = "darkblue")
 dev.off()
 
+```
 
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# PHASE 7: DENSITREE CLOUDOGRAM VISUALIZATION (Deep Outgroup Anchored)
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---
+
+## 9. DensiTree Cloudogram Visualization
+
+Root and bifurcate all 100 bootstrap topologies on *Freycinetia baueriana*, assign unit branch
+lengths for cladogram display, and render a DensiTree cloudscape overlaid on the classical ML
+consensus backbone. The cloudogram visualizes the full distribution of topological variance
+across the bootstrap replicates.
+
+```{r eval = F}
 
 # Keep all 19 taxa intact (do not drop Freycinetia_baueriana)
 rooted_boot_list <- lapply(1:length(clean_boot_list), function(i)
@@ -383,10 +563,20 @@ phangorn::densiTree(rooted_boot_list,
                     main = "Quantum Bootstrap Densitree\n(Topological Variation Cloud vs. Classical Baseline)")
 dev.off()
 
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# PHASE 8: ROBINSON-FOULDS (RF) TOPOLOGICAL DISTANCE HISTOGRAM
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+```
 
+---
+
+## 10. Robinson-Foulds Distance Profile
+
+Calculate absolute RF distances between the ML reference backbone and each of the 100 quantum
+bootstrap replicates. The resulting distribution is summarized and rendered as a histogram with
+the median RF distance marked. Values well below the random expectation threshold confirm that
+the annealing engine explores a constrained, biologically meaningful neighborhood of treespace.
+
+```{r eval = F}
+
+# Calculate pairwise RF distances between the classical tree and quantum bootstrap trees
 rf_distances <- sapply(1:length(sanitized_boot_list), function(i)
 {
   return(TreeDist::RobinsonFoulds(supported_tree, sanitized_boot_list[[i]]))
@@ -395,6 +585,7 @@ rf_distances <- sapply(1:length(sanitized_boot_list), function(i)
 message("\n=== ROBINSON-FOULDS DISTANCE AUDIT ===")
 print(summary(rf_distances))
 
+# Make histogram
 pdf("Quantum_Bootstrap_RF_Histogram.pdf", width = 8, height = 6)
 max_rf <- max(rf_distances, na.rm = TRUE)
 if(max_rf == 0) max_rf <- 2
@@ -410,10 +601,19 @@ legend("topright", legend = paste("Median RF Distance =", median(rf_distances)),
        col = "darkred", lwd = 2, lty = 2, box.col = "white")
 dev.off()
 
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# PHASE 9: MANUSCRIPT METRICS COMPILATION & SUMMARY TABLE EXPORT
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+```
 
+---
+
+## 11. Summary Metrics and Node Support Tables
+
+Compile resolution, RF distance, and QBS statistics into a structured summary table and
+per-node support table. Both are exported as CSV files for downstream reporting. The final
+block calculates the median and IQR of the per-node QBS vs. UFBoot difference.
+
+```{r eval = F}
+
+# Summarize metrics
 res_summary <- summary(resolution_percentages)
 rf_summary  <- summary(rf_distances)
 raw_qbs_numeric <- as.numeric(qbs_values)
@@ -454,26 +654,43 @@ node_support_table <- data.frame(
   stringsAsFactors = FALSE
 )
 
+summary(c(as.numeric(qbs_values)*100)[-1]-as.numeric(raw_ref$node.label)[-1])
+uwu <- c(as.numeric(qbs_values)*100)[-1]-as.numeric(raw_ref$node.label)[-1]
+paste0(round(median(uwu), 2), " ± ", round(IQR(uwu), 2))
+
 print(dataset_summary_matrix, row.names = FALSE)
 write.csv(dataset_summary_matrix, file = "Quantum_Bootstrap_Dataset_Summary.csv", row.names = FALSE)
 write.csv(node_support_table, file = "Quantum_Bootstrap_Node_Support_Details.csv", row.names = FALSE)
 
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# PHASE 10: CALCULATE LOW-SUPPORT NODAL DEPTH (MEASURING "MIDDLENESS")
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+```
 
+---
+
+## 12. Nodal Depth Analysis of Low-Support Conflict
+
+Normalize root-to-tip depths for all internal nodes and identify those falling below the 70%
+QBS threshold. The median relative depth of these weak nodes is reported and automatically
+interpreted as root-proximal, mid-phylogeny, or tip-proximal conflict, characterizing the
+spatial distribution of topological uncertainty across the tree.
+
+```{r eval = F}
+
+# Calcuate all node depths
 all_node_depths <- ape::node.depth.edgelength(supported_tree)
 internal_depths <- all_node_depths[(n_tips + 1):length(all_node_depths)]
 norm_depths <- (internal_depths - min(internal_depths)) / (max(internal_depths) - min(internal_depths))
 
+# Make output dataframe
 support_depth_df <- data.frame(
   Node_ID = (n_tips + 1):length(all_node_depths),
   QBS = as.numeric(supported_tree$node.label) * 100,
   Relative_Depth = norm_depths
 )
 
+# Define and extract weka nodes
 weak_nodes <- support_depth_df[!is.na(support_depth_df$QBS) & support_depth_df$QBS < 70, ]
 
+# Report metrics
 if (nrow(weak_nodes) > 0)
 {
   median_weak_depth <- median(weak_nodes$Relative_Depth)
@@ -492,3 +709,23 @@ if (nrow(weak_nodes) > 0)
 } else {
   message("All nodes possess high support; no topological weak zones detected.")
 }
+
+```
+
+---
+
+## License
+
+[![AGPL v3 License](https://www.gnu.org/graphics/agplv3-with-text-162x68.png)](https://www.gnu.org/licenses/agpl-3.0.html)
+
+---
+
+## Institutions
+
+John M. A. Wojahn (a), Paige Ellestad (b), Sven Buerki (a)
+
+(a) Department of Biological Sciences, Boise State University, 1910 University Drive, Boise, ID 83725, USA
+
+(b) Department of Biological Sciences, University of Memphis, 3700 Walker Ave, Memphis, Tennessee 38152, USA
+
+Proudly made in the USA and Canada by members of the 2SLGBTQIA+ Community
