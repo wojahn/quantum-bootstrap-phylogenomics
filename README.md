@@ -9,6 +9,8 @@ https://orcid.org/0000-0002-5060-0798     https://orcid.org/0000-0003-3930-3239
 
 ### Wojahn, J.M.A., Ellestad, P.E. (2026) Integrating Frequentist Bootstrapping with Quantum-Inspired Phylogenetic Reconstruction: A Proof-of-Concept. github.com/wojahn/quantum-bootstrap-phylogenomics DOI: 10.5281/zenodo.20534276
 
+Made Freely Available by Gnoll Pack Analytics, LLC in Boise Idaho.
+
 [![Pipeline](https://img.shields.io/badge/Click_Here_to_Access-Pipeline-success?style=for-the-badge&logo=readme&logoColor=white)](https://wojahn.github.io/quantum-bootstrap-phylogenomics/)
 
 # Summary
