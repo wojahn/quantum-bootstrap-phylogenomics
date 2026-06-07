@@ -1,0 +1,46 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Integrating Frequentist Bootstrapping with Quantum-Inspired
+  Phylogenetic Reconstruction: A Proof-of-Concept"
+type: software
+version: 1.0.1
+date-released: 2026-06-03
+doi: 10.5281/zenodo.20534276
+url: "https://github.com/wojahn/quantum-bootstrap-phylogenomics"
+repository-code: "https://github.com/wojahn/quantum-bootstrap-phylogenomics"
+license: AGPL-3.0
+abstract: "Non-parametric phylogenetic bootstrapping and topological ensemble
+  cloud generation leveraging discrete quantum optimization architectures
+  and QUBO mapping frameworks. Introduces Quantum Bootstrap Support (QBS)
+  as the first framework coupling frequentist resampling with a
+  quantum-inspired phylogenetic optimizer."
+keywords:
+  - phylogenetics
+  - bioinformatics
+  - quantum computing
+  - bootstrap
+  - systematics
+  - QUBO
+  - simulated annealing
+  - Pandanaceae
+authors:
+  - family-names: Wojahn
+    given-names: John M. A.
+    orcid: "https://orcid.org/0000-0002-5060-0798"
+  - family-names: Ellestad
+    given-names: Paige E.
+    orcid: "https://orcid.org/0000-0003-3930-3239"
+preferred-citation:
+  type: generic
+  title: "Integrating Frequentist Bootstrapping with Quantum-Inspired
+    Phylogenetic Reconstruction: A Proof-of-Concept"
+  authors:
+    - family-names: Wojahn
+      given-names: John M. A.
+      orcid: "https://orcid.org/0000-0002-5060-0798"
+    - family-names: Ellestad
+      given-names: Paige E.
+      orcid: "https://orcid.org/0000-0003-3930-3239"
+  year: 2026
+  doi: 10.5281/zenodo.20534276
+  url: "https://github.com/wojahn/quantum-bootstrap-phylogenomics"
