@@ -3,14 +3,15 @@ Non-parametric phylogenetic bootstrapping and topological ensemble cloud generat
 
 John M. A. Wojahn, Paige Ellestad
 
-https://orcid.org/0000-0002-5060-0798     https://orcid.org/0000-0003-3930-3239
+https://orcid.org/0000-0002-5060-0798     
+https://orcid.org/0000-0003-3930-3239
 
 ## How to cite: 
 
 ### Wojahn, J.M.A., Ellestad, P.E. (2026) Integrating Frequentist Bootstrapping with Quantum-Inspired Phylogenetic Reconstruction: A Proof-of-Concept. github.com/wojahn/quantum-bootstrap-phylogenomics DOI: 10.5281/zenodo.20534276
 
 
-[![Pipeline](https://img.shields.io/badge/Click_Here_to_Access-Pipeline-success?style=for-the-badge&logo=readme&logoColor=white)](https://wojahn.github.io/quantum-bootstrap-phylogenomics/)
+[![GitHub Pages Pipeline](https://img.shields.io/badge/Click_Here_to_Access-Pipeline-success?style=for-the-badge&logo=readme&logoColor=white)](https://wojahn.github.io/quantum-bootstrap-phylogenomics/)
 
 ## Methodology Made Freely Available to the Public by Gnoll Pack Analytics, LLC
 
